@@ -37,3 +37,15 @@
 - [x] Implementación del Analizador Semántico (Segunda Pasada)
 - [x] Generación automática de entidades implícitas
 - [x] Validación de consistencia semántica
+- [x] PR creada y lista para merge [#3](https://github.com/thotluna/ts-uml-engine/pull/3)
+ 
++### Fase 4: API Pública y Empaquetado
++- [ ] Implementación de la clase `UMLEngine` (Fachada principal)
++- [ ] Integración de Lexer -> Parser -> Analyzer en un solo flujo
++- [ ] Exportación de tipos y modelos para uso como librería
++- [ ] Automatización de build (dist/)
++
++### Fase 5: Herramientas de Referencia (Diagramas)
++- [ ] Implementación de un `MermaidRenderer` (basado en la IR)
++- [ ] CLI simple para procesar archivos .umlts
++
