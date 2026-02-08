@@ -27,8 +27,9 @@ El AST (Abstract Syntax Tree) es el contrato entre el compilador y cualquier mot
 {
   "type": "Entity",
   "kind": "class" | "interface" | "enum",
-  "name": "string", // Nombre calificado (ej. Core.Domain.User)
-  "visibility": "public" | "private" | "protected" | "internal",
+  "name": "string",
+  "visibility": "string",
+  "isAbstract": "boolean",
   "relationships": [
     // Relaciones declaradas en la cabecera (>> o >I)
     {
@@ -42,13 +43,16 @@ El AST (Abstract Syntax Tree) es el contrato entre el compilador y cualquier mot
       "name": "string",
       "visibility": "string",
       "dataType": "string",
-      "multiplicity": "string", // ej. "1..*", "0..*", "1"
-      "isRelation": "boolean"  // true si usa >* , >+ , etc.
+      "multiplicity": "string",
+      "isRelation": "boolean",
+      "isStatic": "boolean"
     },
     {
       "type": "Method",
       "name": "string",
       "visibility": "string",
+      "isStatic": "boolean",
+      "isAbstract": "boolean",
       "parameters": [
         { "name": "string", "type": "string" }
       ],
