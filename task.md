@@ -29,8 +29,11 @@
 - [x] Implementación del Recursive Descent Parser (Estructura base completa)
 - [x] Manejo de errores sintácticos y recuperación (Diagnostics)
 - [x] Validación con casos de prueba complejos
+- [x] PR creada y lista para merge [#2](https://github.com/thotluna/ts-uml-engine/pull/2)
 
-### Fase 3: Generator / Intermediate Representation
-- [ ] Mapeo de AST a estructura de datos de Diagrama
-- [ ] Implementación del generador de Mermaid (como primera salida)
-- [ ] Exportación de esquema para integraciones externas
+### Fase 3: Analizador Semántico e IR (Representación Intermedia)
+- [x] Definición de Modelos de IR (Entidades y Relaciones resueltas)
+- [x] Implementación de la Symbol Table (Registro de FQNs)
+- [x] Implementación del Analizador Semántico (Segunda Pasada)
+- [x] Generación automática de entidades implícitas
+- [x] Validación de consistencia semántica
