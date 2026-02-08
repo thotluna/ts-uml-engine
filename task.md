@@ -12,8 +12,10 @@
 - [x] Definición de la arquitectura del compilador (Lexer -> Parser -> Mapper/Generator)
 - [x] Definición del contrato de salida del AST (Esquema JSON)
 - [x] Documentación de la gramática formal (EBNF-like)
+- [x] Definición de estrategia de Git y Convención de Commits
 
-### Fase 1: Lexer (Análisis Léxico)
+### Fase 1: Entorno y Lexer (Análisis Léxico)
+- [x] Configuración de entorno (TS, pnpm, vitest, nodemon)
 - [ ] Definición de Tokens (Keywords, Symbols, Identifiers)
 - [ ] Implementación del Lexer
 - [ ] Validación de tokens y manejo de errores léxicos
