@@ -36,7 +36,9 @@ entity_type    ::= "class" | "interface" | "enum"
 body_opt       ::= "{" member* "}"
                  | empty
 
-member         ::= visibility_opt (method_def | attribute_def) [comment]
+member         ::= visibility_opt [static_opt] [abstract_opt] (method_def | attribute_def) [comment]
+
+static_opt     ::= "static"
 
 visibility_opt ::= "+" | "-" | "#" | "~" | "public" | "private" | "protected" | "internal" | empty
 ```
