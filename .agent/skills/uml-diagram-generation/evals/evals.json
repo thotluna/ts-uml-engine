@@ -1,0 +1,122 @@
+[
+  {
+    "id": "eval-0",
+    "prompt": "Tengo un AST de Tree-sitter de mi DSL de UML. Necesito convertirlo a código Mermaid para generar diagramas de clases. Muéstrame cómo recorrer el AST y extraer clases con sus atributos, métodos y relaciones. Dame código TypeScript completo.",
+    "expectations": [
+      "Proporciona código completo para recorrer el AST de Tree-sitter",
+      "Muestra cómo extraer información de nodos (class_declaration, attribute, method)",
+      "Implementa extracción de relaciones entre clases",
+      "Genera sintaxis Mermaid válida para class diagrams",
+      "Maneja visibilidad (+, -, #, ~)",
+      "El código es TypeScript funcional y completo",
+      "Incluye ejemplo de uso"
+    ]
+  },
+  {
+    "id": "eval-1",
+    "prompt": "Quiero comparar Mermaid, D3.js y custom SVG para generar diagramas UML en mi extensión VSCode. ¿Cuál me recomiendas y por qué? Dame una tabla comparativa con pros/cons y casos de uso.",
+    "expectations": [
+      "Compara al menos 3 tecnologías (Mermaid, D3.js, Custom SVG)",
+      "Proporciona tabla con pros y cons",
+      "Menciona dependencias y requisitos de cada opción",
+      "Considera el contexto de VSCode extension",
+      "Da recomendación clara con justificación",
+      "Menciona performance y complejidad de implementación",
+      "Incluye cuándo usar cada tecnología"
+    ]
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Necesito generar SVG personalizado desde mi AST porque quiero control total sobre el layout. Muéstrame cómo implementar un generador SVG que: 1) calcule posiciones de clases en grid, 2) dibuje las cajas de clases con atributos/métodos, 3) dibuje flechas entre clases. Código TypeScript completo.",
+    "expectations": [
+      "Proporciona implementación completa de SVG generator",
+      "Incluye cálculo de layout (grid positioning)",
+      "Muestra cómo generar rectángulos SVG para clases",
+      "Implementa rendering de texto (nombre, atributos, métodos)",
+      "Genera paths/lines para relaciones con flechas",
+      "Incluye markers SVG para diferentes tipos de flechas",
+      "El SVG generado es sintácticamente correcto",
+      "Código es modular y bien estructurado"
+    ]
+  },
+  {
+    "id": "eval-3",
+    "prompt": "Quiero implementar diferentes algoritmos de layout para organizar las clases en el diagrama. Compara: grid layout, hierarchical layout (para herencia), y force-directed layout. Muéstrame implementación de al menos dos.",
+    "expectations": [
+      "Explica al menos 3 algoritmos de layout diferentes",
+      "Proporciona implementación de código para al menos 2",
+      "Compara ventajas y desventajas de cada algoritmo",
+      "Menciona cuándo usar cada uno",
+      "El código calcula posiciones x,y para cada clase",
+      "Considera relaciones entre clases en el layout",
+      "Incluye ejemplos visuales o pseudocódigo"
+    ]
+  },
+  {
+    "id": "eval-4",
+    "prompt": "Tengo mi diagrama en SVG pero necesito exportarlo a PNG y PDF. ¿Cómo implemento la conversión? Dame código para ambos formatos que funcione en el browser (WebView de VSCode).",
+    "expectations": [
+      "Proporciona código para convertir SVG a PNG",
+      "Proporciona código para convertir SVG a PDF",
+      "Usa Canvas API para PNG",
+      "Menciona librerías necesarias (jsPDF, svg2pdf.js, etc.)",
+      "El código funciona en browser/WebView",
+      "Incluye manejo de errores",
+      "Retorna Blob o permite download",
+      "Código es completo y funcional"
+    ]
+  },
+  {
+    "id": "eval-5",
+    "prompt": "Mi diagrama es interactivo con D3.js. Quiero que las clases se puedan arrastrar y el layout se reorganice automáticamente. Muéstrame cómo implementar drag-and-drop con force simulation de D3.",
+    "expectations": [
+      "Usa D3.js force simulation",
+      "Implementa drag behavior correctamente",
+      "Muestra código para force layout (forceLink, forceManyBody, etc.)",
+      "Configura fuerzas apropiadas (repulsión, atracción, centro)",
+      "Actualiza posiciones en cada tick de la simulación",
+      "Código TypeScript completo con tipos de D3",
+      "Incluye ejemplo de cómo renderizar nodos y links"
+    ]
+  },
+  {
+    "id": "eval-6",
+    "prompt": "Tengo diagramas muy grandes (50+ clases). El rendering es lento. ¿Qué técnicas de optimización puedo usar? Dame implementaciones concretas de al menos 2 técnicas.",
+    "expectations": [
+      "Identifica al menos 3 técnicas de optimización",
+      "Proporciona implementación de al menos 2",
+      "Menciona virtualización (solo renderizar lo visible)",
+      "Menciona caching de elementos renderizados",
+      "Menciona rendering incremental",
+      "Código muestra implementación práctica",
+      "Explica trade-offs de cada técnica"
+    ]
+  },
+  {
+    "id": "eval-7",
+    "prompt": "Quiero un sistema de themes para mis diagramas (light, dark, high-contrast). Diseña la estructura de datos para themes y muéstrame cómo aplicarlos al generar SVG.",
+    "expectations": [
+      "Define estructura/interface para Theme",
+      "Incluye al menos 2-3 themes predefinidos (light, dark)",
+      "Theme cubre colores, fonts, stroke widths, etc.",
+      "Muestra cómo aplicar theme al generar SVG",
+      "Usa el theme en styles CSS o atributos SVG",
+      "Estructura es extensible para custom themes",
+      "Código TypeScript con tipos bien definidos"
+    ]
+  },
+  {
+    "id": "eval-8",
+    "prompt": "Necesito integrar todo: parser Tree-sitter → AST → generador de diagramas → export. Dame una clase DiagramService que orqueste todo el flujo y exponga API simple para generar y exportar diagramas en múltiples formatos.",
+    "expectations": [
+      "Proporciona clase DiagramService completa",
+      "Integra parser, generator, y export",
+      "API limpia y simple de usar",
+      "Soporta múltiples formatos de generación (mermaid, svg, d3)",
+      "Soporta múltiples formatos de export (svg, png, pdf)",
+      "Incluye manejo de errores",
+      "Código TypeScript bien estructurado",
+      "Incluye ejemplo de uso"
+    ]
+  }
+]

@@ -1,0 +1,75 @@
+[
+  {
+    "id": "eval-0",
+    "prompt": "Necesito ayuda diseñando la gramática para mi DSL de UML. Quiero poder definir clases con atributos y métodos, y relaciones entre ellas. Los usuarios serán desarrolladores familiarizados con programación orientada a objetos. ¿Me puedes proponer una sintaxis clara y mostrarme la gramática EBNF?",
+    "expectations": [
+      "Propone al menos 2 opciones de sintaxis diferentes",
+      "Incluye una gramática formal (EBNF, BNF o similar)",
+      "La sintaxis soporta clases con atributos y métodos",
+      "La sintaxis soporta relaciones entre clases",
+      "Explica las ventajas de cada opción propuesta",
+      "Considera la audiencia técnica (desarrolladores)",
+      "La gramática es no ambigua o menciona cómo resolver ambigüedades"
+    ]
+  },
+  {
+    "id": "eval-1",
+    "prompt": "Estoy usando Tree-sitter para mi DSL de diagramas UML. ¿Cómo implemento error recovery para que el parser pueda seguir analizando después de encontrar un error de sintaxis? Dame ejemplos concretos de código.",
+    "expectations": [
+      "Explica el concepto de error recovery",
+      "Proporciona ejemplos de código específicos para Tree-sitter",
+      "Muestra cómo identificar puntos de sincronización",
+      "Menciona estrategias para continuar parseando después de errores",
+      "Los ejemplos son prácticos y aplicables",
+      "Menciona cómo reportar múltiples errores al usuario"
+    ]
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Tengo esta gramática pero ANTLR me dice que es ambigua:\n\nexpression: expression '+' expression\n          | expression '*' expression\n          | NUMBER\n          ;\n\n¿Cómo la arreglo para que tenga precedencia de operadores correcta (multiplicación antes que suma)?",
+    "expectations": [
+      "Identifica el problema de ambigüedad",
+      "Explica por qué es ambigua la gramática",
+      "Proporciona una solución correcta que respeta precedencia",
+      "La solución evita left-recursion si es necesario",
+      "Explica cómo funciona la solución propuesta",
+      "Menciona precedencia y asociatividad"
+    ]
+  },
+  {
+    "id": "eval-3",
+    "prompt": "Diseña un AST (Abstract Syntax Tree) bien estructurado para un DSL que define clases UML. El AST debe incluir información de ubicación en el código fuente para errores precisos.",
+    "expectations": [
+      "Define interfaces o tipos TypeScript para nodos del AST",
+      "Incluye un tipo para SourceLocation con línea y columna",
+      "Los nodos tienen propiedades bien tipadas",
+      "Incluye al menos ClassNode y MemberNode",
+      "Explica por qué incluir source locations",
+      "Usa una estructura jerárquica clara"
+    ]
+  },
+  {
+    "id": "eval-4",
+    "prompt": "¿Qué parser generator me recomiendas para crear una extensión de VSCode que soporte syntax highlighting, autocompletado y validación en tiempo real de mi DSL de UML? Compara las opciones.",
+    "expectations": [
+      "Menciona Tree-sitter como opción principal para VSCode",
+      "Compara al menos 2-3 tecnologías diferentes",
+      "Explica ventajas y desventajas de cada una",
+      "Considera requisitos específicos de VSCode",
+      "Menciona integración con Language Server Protocol",
+      "Da recomendación clara con justificación"
+    ]
+  },
+  {
+    "id": "eval-5",
+    "prompt": "Mi parser es muy lento al abrir archivos grandes (>1000 líneas). Implemento el parser con PEG.js. ¿Qué estrategias de optimización puedo usar?",
+    "expectations": [
+      "Identifica causas comunes de lentitud en parsers PEG",
+      "Sugiere parsing incremental para archivos grandes",
+      "Menciona memoización o caching",
+      "Proporciona ejemplos de código o pseudocódigo",
+      "Sugiere alternativas si PEG.js no es suficiente",
+      "Menciona estrategias de lazy evaluation"
+    ]
+  }
+]

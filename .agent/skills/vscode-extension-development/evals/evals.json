@@ -1,0 +1,106 @@
+[
+  {
+    "id": "eval-0",
+    "prompt": "Quiero crear una extensión de VSCode para mi DSL de UML. Necesito soporte básico: syntax highlighting, validación en tiempo real, y autocompletado. ¿Por dónde empiezo? Dame los pasos específicos y la estructura de proyecto.",
+    "expectations": [
+      "Menciona el uso de 'yo code' para generar el scaffold",
+      "Lista los archivos principales necesarios (package.json, extension.ts, tmLanguage)",
+      "Explica la estructura del proyecto",
+      "Proporciona ejemplo de package.json con contributes.languages",
+      "Menciona activation events apropiados",
+      "Explica cómo registrar providers (completion, diagnostics)",
+      "Da ejemplos de código concretos en TypeScript"
+    ]
+  },
+  {
+    "id": "eval-1",
+    "prompt": "Tengo mi parser Tree-sitter funcionando para UML. ¿Cómo lo integro en mi extensión de VSCode para validar archivos y mostrar errores con squiggles rojos?",
+    "expectations": [
+      "Explica cómo importar Tree-sitter en la extensión",
+      "Muestra cómo inicializar el parser con el .wasm file",
+      "Proporciona código para crear un DiagnosticCollection",
+      "Muestra cómo parsear el documento y extraer errores",
+      "Explica cómo convertir posiciones del parser a VSCode Range",
+      "Incluye ejemplo de onDidChangeTextDocument con debouncing",
+      "Menciona la importancia de limpiar diagnostics cuando se corrigen errores"
+    ]
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Necesito crear una gramática TextMate para syntax highlighting de mi DSL. Mi DSL tiene keywords (class, interface, extends), tipos (String, Number), comentarios (// y /* */), y operadores de relación (->, <|--, o--, *--). Muéstrame el archivo tmLanguage.json completo.",
+    "expectations": [
+      "Proporciona un archivo tmLanguage.json válido",
+      "Define patterns para keywords, types, comments, operators",
+      "Usa scopeName correcto (source.uml o similar)",
+      "Incluye repository con patterns reutilizables",
+      "Los scopes siguen convenciones de TextMate (keyword.control, comment.line, etc.)",
+      "Maneja strings y escape characters",
+      "El JSON es sintácticamente correcto"
+    ]
+  },
+  {
+    "id": "eval-3",
+    "prompt": "Quiero implementar autocompletado inteligente en mi extensión. Cuando el usuario escribe 'class ', debe sugerir un snippet. Cuando escribe después de ':', debe sugerir tipos. Dame el código completo del CompletionItemProvider.",
+    "expectations": [
+      "Proporciona código completo de registerCompletionItemProvider",
+      "Muestra cómo crear CompletionItems con diferentes CompletionItemKind",
+      "Incluye SnippetString para el snippet de 'class'",
+      "Implementa lógica context-aware basada en el contenido de la línea",
+      "Define trigger characters apropiados",
+      "Añade documentation a los completion items",
+      "El código es TypeScript válido con tipos correctos de vscode"
+    ]
+  },
+  {
+    "id": "eval-4",
+    "prompt": "Necesito implementar Language Server Protocol para mi extensión porque el parsing es pesado. Muéstrame la arquitectura: cómo separar el client (extensión) del server, y el código para ambos lados con comunicación JSON-RPC.",
+    "expectations": [
+      "Explica la arquitectura client-server de LSP",
+      "Proporciona código del cliente usando vscode-languageclient",
+      "Proporciona código del servidor usando vscode-languageserver",
+      "Muestra la configuración de ServerOptions y ClientOptions",
+      "Explica cómo se comunican via JSON-RPC",
+      "Incluye ejemplo de capabilities (completions, diagnostics, hover)",
+      "Menciona ventajas de LSP (separación, reutilización, performance)"
+    ]
+  },
+  {
+    "id": "eval-5",
+    "prompt": "Quiero mostrar un preview en vivo del diagrama UML en un WebView panel mientras el usuario edita. El panel debe actualizarse automáticamente. ¿Cómo lo implemento?",
+    "expectations": [
+      "Muestra código para crear WebviewPanel",
+      "Explica enableScripts y localResourceRoots",
+      "Proporciona ejemplo de HTML content para el webview",
+      "Muestra cómo usar webview.postMessage para actualizar contenido",
+      "Implementa listener de onDidChangeTextDocument",
+      "Maneja correctamente el disposal del panel y listeners",
+      "Menciona asWebviewUri para cargar recursos locales"
+    ]
+  },
+  {
+    "id": "eval-6",
+    "prompt": "Mi extensión es lenta y se activa al iniciar VSCode. ¿Cómo optimizo el performance y la activación? Dame técnicas específicas.",
+    "expectations": [
+      "Identifica activation events específicos en lugar de '*'",
+      "Recomienda onLanguage:uml en lugar de activación global",
+      "Explica debouncing para operaciones costosas",
+      "Sugiere usar Output Channel en lugar de console.log",
+      "Menciona lazy loading y code splitting",
+      "Recomienda perfilado con VSCode Performance tools",
+      "Sugiere LSP para separar parsing pesado"
+    ]
+  },
+  {
+    "id": "eval-7",
+    "prompt": "Estoy listo para publicar mi extensión al marketplace. ¿Cuáles son los pasos exactos desde empaquetar hasta publicar? Incluye comandos y requisitos.",
+    "expectations": [
+      "Menciona instalación de @vscode/vsce",
+      "Muestra comando 'vsce package'",
+      "Explica necesidad de crear publisher account",
+      "Menciona Personal Access Token de Azure DevOps",
+      "Proporciona comandos 'vsce login' y 'vsce publish'",
+      "Recomienda preparar README.md con screenshots",
+      "Menciona versionado semántico (major/minor/patch)"
+    ]
+  }
+]

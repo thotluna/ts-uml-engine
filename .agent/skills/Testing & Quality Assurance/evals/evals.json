@@ -1,0 +1,52 @@
+[
+  {
+    "id": "qa-eval-0",
+    "prompt": "Necesito crear un test unitario para un parser que detecta relaciones UML (herencia, composición). Si el input es 'A <|-- B', el parser debe devolver un objeto con tipo 'herencia'. Escribe el test usando Vitest.",
+    "expectations": [
+      "Utiliza 'describe' para agrupar y 'it' o 'test' para el caso específico.",
+      "Importa las funciones necesarias del módulo del parser.",
+      "Realiza una aserción clara (ej. expect(result.type).toBe('herencia')).",
+      "Incluye un caso de error o 'edge case' (ej. un input vacío o mal formado)."
+    ]
+  },
+  {
+    "id": "qa-eval-1",
+    "prompt": "¿Cómo puedo realizar pruebas de integración en mi extensión de VSCode para asegurar que el comando 'uml.generate' está registrado y se ejecuta correctamente?",
+    "expectations": [
+      "Menciona el uso de la suite de tests de VSCode (@vscode/test-electron).",
+      "Explica que se debe usar vscode.commands.getCommands(true) para verificar el registro.",
+      "Proporciona un ejemplo de cómo ejecutar el comando usando vscode.commands.executeCommand.",
+      "Sugiere el uso de aserciones de 'mocha' o 'assert' (estándar en VSCode)."
+    ]
+  },
+  {
+    "id": "qa-eval-2",
+    "prompt": "Tengo una clase que depende de una base de datos externa para validar nombres de clases UML. ¿Cómo escribo un test sin conectarme a la base de datos real?",
+    "expectations": [
+      "Explica el concepto de Mocking o Inyección de Dependencias.",
+      "Proporciona un ejemplo usando vi.fn() o vi.mock() si se usa Vitest.",
+      "Muestra cómo definir el valor de retorno del mock (mockReturnValue).",
+      "Verifica que el mock fue llamado con los parámetros correctos (toHaveBeenCalledWith)."
+    ]
+  },
+  {
+    "id": "qa-eval-3",
+    "prompt": "Explícame cómo configurar un pipeline de CI (como GitHub Actions) para que los tests de mi extensión se ejecuten automáticamente en cada Push.",
+    "expectations": [
+      "Menciona la creación de un archivo .yml en .github/workflows/.",
+      "Define los pasos básicos: checkout, install dependencies, build/compile, y run tests.",
+      "Especifica que se debe usar una matriz (os: [ubuntu-latest, windows-latest]) para probar compatibilidad.",
+      "Menciona el uso de un 'virtual display' (xvfb) para entornos Linux si se prueban extensiones de VSCode."
+    ]
+  },
+  {
+    "id": "qa-eval-4",
+    "prompt": "El usuario reporta que la validación de errores (diagnostics) es lenta. ¿Cómo diseño un test de performance o qué estrategia de QA aplico para medir el impacto del debouncing?",
+    "expectations": [
+      "Sugiere el uso de timers falsos (vi.useFakeTimers()) para probar el debouncing.",
+      "Explica cómo medir el tiempo de ejecución entre el cambio del documento y la aparición de squiggles.",
+      "Menciona la importancia de probar con archivos UML de gran tamaño (stress testing).",
+      "Propone verificar que no se disparen múltiples validaciones innecesarias."
+    ]
+  }
+]

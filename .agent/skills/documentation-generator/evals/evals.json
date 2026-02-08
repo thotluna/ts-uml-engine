@@ -1,0 +1,30 @@
+[
+  {
+    "id": "doc-eval-0",
+    "prompt": "Genera la documentación JSDoc completa para una función asíncrona que recibe un objeto 'Config', valida un token y devuelve una promesa con un booleano.",
+    "expectations": [
+      "Incluye @param con el tipo y descripción.",
+      "Incluye @returns con la descripción del valor devuelto.",
+      "Especifica @throws si hay manejo de errores.",
+      "Usa formato TSDoc si se menciona TypeScript."
+    ]
+  },
+  {
+    "id": "doc-eval-1",
+    "prompt": "Crea una tabla comparativa en Markdown sobre las ventajas de usar Tree-sitter vs RegEx para el resaltado de sintaxis.",
+    "expectations": [
+      "Tabla Markdown bien formateada.",
+      "Columnas para 'Característica', 'Tree-sitter', 'RegEx'.",
+      "Menciona performance, precisión y facilidad de mantenimiento."
+    ]
+  },
+  {
+    "id": "doc-eval-2",
+    "prompt": "Escribe una guía de 'Troubleshooting' para una extensión de VSCode que no carga el parser .wasm.",
+    "expectations": [
+      "Sección de 'Problemas comunes'.",
+      "Pasos numerados para la solución.",
+      "Bloques de código con comandos de verificación (ls, chmod, etc.)."
+    ]
+  }
+]
