@@ -47,7 +47,8 @@ export class SymbolMatcher implements TokenMatcher {
           '>use': TokenType.KW_USE
         };
 
-        if (kwMap[value]) return { type: kwMap[value], value, line: startLine, column: startColumn };
+        const kwType = kwMap[value];
+        if (kwType) return { type: kwType, value, line: startLine, column: startColumn };
 
         // Si no es un keyword especial, devolvemos solo el >
         reader.rollback(snap);
