@@ -16,14 +16,18 @@
 
 ### Fase 1: Entorno y Lexer (Análisis Léxico)
 - [x] Configuración de entorno (TS, pnpm, vitest, nodemon)
-- [ ] Definición de Tokens (Keywords, Symbols, Identifiers)
-- [ ] Implementación del Lexer
-- [ ] Validación de tokens y manejo de errores léxicos
+- [x] Definición de Tokens (Keywords, Symbols, Identifiers)
+- [x] Refactorización del Lexer (Principio Open-Closed / Matchers)
+- [x] Implementación del Lexer (Lógica base)
+- [x] Validación de tokens y manejo de errores léxicos (Tests passing)
+- [x] PR creada y lista para merge [#1](https://github.com/thotluna/ts-uml-engine/pull/1)
 
 ### Fase 2: Parser (Análisis Sintáctico)
-- [ ] Definición de la Gramática (EBNF/Formal)
-- [ ] Implementación del Parser (Construcción del AST)
-- [ ] Manejo de errores sintácticos con recuperación
+- [/] Definición de la Gramática (EBNF/Formal)
+- [/] Implementación de Nodos del AST (Interfaces)
+- [ ] Implementación del Recursive Descent Parser
+- [ ] Manejo de errores sintácticos y recuperación
+- [ ] Validación con casos de prueba complejos
 
 ### Fase 3: Generator / Intermediate Representation
 - [ ] Mapeo de AST a estructura de datos de Diagrama
