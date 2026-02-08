@@ -17,7 +17,8 @@
 ### Fase 1: Entorno y Lexer (Análisis Léxico)
 - [x] Configuración de entorno (TS, pnpm, vitest, nodemon)
 - [x] Definición de Tokens (Keywords, Symbols, Identifiers)
-- [x] Implementación del Lexer
+- [x] Refactorización del Lexer (Principio Open-Closed / Matchers)
+- [x] Implementación del Lexer (Lógica base)
 - [x] Validación de tokens y manejo de errores léxicos (Tests passing)
 
 ### Fase 2: Parser (Análisis Sintáctico)

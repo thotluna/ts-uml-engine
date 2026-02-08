@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { Lexer } from './lexer';
+import { LexerFactory } from './lexer.factory';
 import { TokenType } from './token.types';
 
 describe('Lexer', () => {
   it('should tokenize a simple class declaration', () => {
     const input = 'class User';
-    const lexer = new Lexer(input);
+    const lexer = LexerFactory.create(input);
     const tokens = lexer.tokenize();
 
     expect(tokens).toHaveLength(3); // KW_CLASS, IDENTIFIER, EOF
@@ -29,7 +29,7 @@ describe('Lexer', () => {
 
   it('should handle whitespace correctly', () => {
     const input = '  class   User  ';
-    const lexer = new Lexer(input);
+    const lexer = LexerFactory.create(input);
     const tokens = lexer.tokenize();
 
     expect(tokens).toHaveLength(3);
@@ -39,7 +39,7 @@ describe('Lexer', () => {
 
   it('should tokenize relations and symbols correctly', () => {
     const input = '>> >I >* >+ >- >';
-    const lexer = new Lexer(input);
+    const lexer = LexerFactory.create(input);
     const tokens = lexer.tokenize();
 
     expect(tokens[0].type).toBe(TokenType.OP_INHERIT);
@@ -52,7 +52,7 @@ describe('Lexer', () => {
 
   it('should tokenize braces and other symbols', () => {
     const input = '{ } ( ) [ ] : , . .. | * + - # ~';
-    const lexer = new Lexer(input);
+    const lexer = LexerFactory.create(input);
     const tokens = lexer.tokenize();
 
     const expectedTypes = [
@@ -71,7 +71,7 @@ describe('Lexer', () => {
 
   it('should tokenize single-line comments', () => {
     const input = 'class User // This is a user class';
-    const lexer = new Lexer(input);
+    const lexer = LexerFactory.create(input);
     const tokens = lexer.tokenize();
 
     expect(tokens).toHaveLength(4); // KW_CLASS, IDENTIFIER, COMMENT, EOF
@@ -81,7 +81,7 @@ describe('Lexer', () => {
 
   it('should tokenize multi-line comments', () => {
     const input = '/* Multi-line\n   comment */ class User';
-    const lexer = new Lexer(input);
+    const lexer = LexerFactory.create(input);
     const tokens = lexer.tokenize();
 
     expect(tokens).toHaveLength(4); // COMMENT, KW_CLASS, IDENTIFIER, EOF
