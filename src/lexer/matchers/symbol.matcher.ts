@@ -10,9 +10,9 @@ export class SymbolMatcher implements TokenMatcher {
     '[': TokenType.LBRACKET, ']': TokenType.RBRACKET,
     ':': TokenType.COLON, ',': TokenType.COMMA,
     '.': TokenType.DOT, '|': TokenType.PIPE,
-    '*': TokenType.STAR, '+': TokenType.VIS_PUB,
+    '*': TokenType.MOD_ABSTRACT, '+': TokenType.VIS_PUB,
     '-': TokenType.VIS_PRIV, '#': TokenType.VIS_PROT,
-    '~': TokenType.VIS_PACK
+    '~': TokenType.VIS_PACK, '$': TokenType.MOD_STATIC
   };
 
   public match(reader: LexerReader): Token | null {

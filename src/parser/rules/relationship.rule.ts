@@ -16,6 +16,8 @@ export class RelationshipRule implements StatementRule {
 
       if (context.check(TokenType.LBRACKET)) {
         fromMultiplicity = this.parseMultiplicity(context);
+      } else if (context.match(TokenType.STRING)) {
+        fromMultiplicity = context.prev().value;
       }
 
       // El siguiente token debe ser un tipo de relación válido
@@ -29,9 +31,16 @@ export class RelationshipRule implements StatementRule {
 
       if (context.check(TokenType.LBRACKET)) {
         toMultiplicity = this.parseMultiplicity(context);
+      } else if (context.match(TokenType.STRING)) {
+        toMultiplicity = context.prev().value;
       }
 
       const toToken = context.consume(TokenType.IDENTIFIER, "Se esperaba el nombre del objetivo de la relación");
+
+      let label: string | undefined = undefined;
+      if (context.match(TokenType.COLON)) {
+        label = context.consume(TokenType.STRING, "Se esperaba una cadena de texto para la etiqueta").value;
+      }
 
       return {
         type: ASTNodeType.RELATIONSHIP,
@@ -40,6 +49,7 @@ export class RelationshipRule implements StatementRule {
         to: toToken.value,
         toMultiplicity,
         kind,
+        label,
         line: fromToken.line,
         column: fromToken.column
       };

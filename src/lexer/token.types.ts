@@ -42,6 +42,9 @@ export enum TokenType {
   VIS_PROT = 'VIS_PROT',          // #
   VIS_PACK = 'VIS_PACK',          // ~
 
+  MOD_STATIC = 'MOD_STATIC',      // $
+  MOD_ABSTRACT = 'MOD_ABSTRACT',  // *
+
   // Identifiers and Literals
   IDENTIFIER = 'IDENTIFIER',
   NUMBER = 'NUMBER',
