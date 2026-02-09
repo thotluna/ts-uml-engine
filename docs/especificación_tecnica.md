@@ -38,7 +38,7 @@ Todas las relaciones deben estar precedidas por el carácter de intención `>`. 
 | **Implementación** | `>I` | `>implements` | Realización (Punteada + Triángulo) |
 | **Composición** | `>*` | `>comp` | Composición (Sólida + Diamante Relleno) |
 | **Agregación** | `>+` | `>agreg` | Agregación (Sólida + Diamante Vacío) |
-| **Dependencia** | `>-` | `>use` | Uso (Punteada + Flecha Abierta) |
+| **Asociación** | `>-` | `>asoc` | Asociación (Sólida + Flecha Abierta) |
 
 
 
