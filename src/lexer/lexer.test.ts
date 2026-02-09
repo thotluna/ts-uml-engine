@@ -51,7 +51,7 @@ describe('Lexer', () => {
   });
 
   it('should tokenize braces and other symbols', () => {
-    const input = '{ } ( ) [ ] : , . .. | * + - # ~';
+    const input = '{ } ( ) [ ] : , . .. | * + - # ~ $';
     const lexer = LexerFactory.create(input);
     const tokens = lexer.tokenize();
 
@@ -60,8 +60,9 @@ describe('Lexer', () => {
       TokenType.LPAREN, TokenType.RPAREN,
       TokenType.LBRACKET, TokenType.RBRACKET,
       TokenType.COLON, TokenType.COMMA, TokenType.DOT, TokenType.RANGE,
-      TokenType.PIPE, TokenType.STAR,
-      TokenType.VIS_PUB, TokenType.VIS_PRIV, TokenType.VIS_PROT, TokenType.VIS_PACK
+      TokenType.PIPE, TokenType.MOD_ABSTRACT,
+      TokenType.VIS_PUB, TokenType.VIS_PRIV, TokenType.VIS_PROT, TokenType.VIS_PACK,
+      TokenType.MOD_STATIC
     ];
 
     expectedTypes.forEach((type, i) => {

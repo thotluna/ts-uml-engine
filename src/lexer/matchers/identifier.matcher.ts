@@ -35,10 +35,10 @@ export class IdentifierMatcher implements TokenMatcher {
   }
 
   private isAlpha(char: string): boolean {
-    return /[a-zA-Z]/.test(char);
+    return /[\p{L}]/u.test(char);
   }
 
   private isAlphaNumeric(char: string): boolean {
-    return /[a-zA-Z0-9]/.test(char);
+    return /[\p{L}\p{N}]/u.test(char);
   }
 }

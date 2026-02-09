@@ -14,8 +14,16 @@ import type { StatementRule } from '../rule.types';
 
 export class EntityRule implements StatementRule {
   public parse(context: ParserContext): EntityNode | null {
+    const isAbstract = context.match(TokenType.KW_ABSTRACT, TokenType.MOD_ABSTRACT);
+
     if (!context.match(TokenType.KW_CLASS, TokenType.KW_INTERFACE, TokenType.KW_ENUM)) {
-      return null;
+      if (isAbstract) {
+        // Si hay abstract pero no le sigue una entidad, retrocedemos o lanzamos error
+        // Para simplificar, asumiremos que si hay abstract, debe venir una clase
+        context.consume(TokenType.KW_CLASS, "Se esperaba 'class' después de 'abstract'");
+      } else {
+        return null;
+      }
     }
 
     const token = context.prev();
@@ -27,20 +35,19 @@ export class EntityRule implements StatementRule {
 
     // Parse relationship list in header
     const relationships: RelationshipHeaderNode[] = [];
-    if (context.match(TokenType.OP_INHERIT, TokenType.OP_IMPLEMENT, TokenType.OP_COMP, TokenType.OP_AGREG, TokenType.OP_USE,
+    while (context.match(TokenType.OP_INHERIT, TokenType.OP_IMPLEMENT, TokenType.OP_COMP, TokenType.OP_AGREG, TokenType.OP_USE,
       TokenType.KW_EXTENDS, TokenType.KW_IMPLEMENTS, TokenType.KW_COMP, TokenType.KW_AGREG, TokenType.KW_USE)) {
-      do {
-        const kind = context.prev().value;
-        const target = context.consume(TokenType.IDENTIFIER, "Se esperaba el nombre del objetivo de la relación").value;
-        relationships.push({
-          type: ASTNodeType.RELATIONSHIP,
-          kind,
-          target,
-          line: context.prev().line,
-          column: context.prev().column
-        });
-      } while (context.match(TokenType.COMMA) && context.match(TokenType.OP_INHERIT, TokenType.OP_IMPLEMENT, TokenType.OP_COMP, TokenType.OP_AGREG, TokenType.OP_USE,
-        TokenType.KW_EXTENDS, TokenType.KW_IMPLEMENTS, TokenType.KW_COMP, TokenType.KW_AGREG, TokenType.KW_USE));
+      const kind = context.prev().value;
+      const target = context.consume(TokenType.IDENTIFIER, "Se esperaba el nombre del objetivo de la relación").value;
+      relationships.push({
+        type: ASTNodeType.RELATIONSHIP,
+        kind,
+        target,
+        line: context.prev().line,
+        column: context.prev().column
+      });
+      // Comma opcional
+      context.match(TokenType.COMMA);
     }
 
     // Parse body members
@@ -48,8 +55,40 @@ export class EntityRule implements StatementRule {
     if (context.match(TokenType.LBRACE)) {
       body = [];
       while (!context.check(TokenType.RBRACE) && !context.isAtEnd()) {
-        const member = this.parseMember(context);
-        if (member) body.push(member);
+        if (type === ASTNodeType.ENUM) {
+          if (context.check(TokenType.COMMENT)) {
+            const commentToken = context.consume(TokenType.COMMENT, "");
+            body.push({
+              type: ASTNodeType.COMMENT,
+              value: commentToken.value,
+              line: commentToken.line,
+              column: commentToken.column
+            });
+            continue;
+          }
+          // Para enums, los miembros son simples identificadores
+          if (context.check(TokenType.IDENTIFIER)) {
+            const nameToken = context.consume(TokenType.IDENTIFIER, "Se esperaba el nombre del literal del enum");
+            body.push({
+              type: ASTNodeType.ATTRIBUTE, // Usamos ATTRIBUTE para representar el literal
+              name: nameToken.value,
+              visibility: 'public',
+              isStatic: true,
+              typeAnnotation: 'any',
+              multiplicity: undefined,
+              line: nameToken.line,
+              column: nameToken.column
+            });
+            // Soporte opcional para coma o simplemente espacio
+            context.match(TokenType.COMMA);
+          } else {
+            // Si no es un identificador ni comentario y no es la llave de cierre, saltamos para evitar loop
+            context.advance();
+          }
+        } else {
+          const member = this.parseMember(context);
+          if (member) body.push(member);
+        }
       }
       context.consume(TokenType.RBRACE, "Se esperaba '}'");
     }
@@ -57,6 +96,7 @@ export class EntityRule implements StatementRule {
     return {
       type,
       name: nameToken.value,
+      isAbstract,
       relationships,
       body,
       line: token.line,
@@ -83,8 +123,8 @@ export class EntityRule implements StatementRule {
       visibility = context.prev().value;
     }
 
-    const isStatic = context.match(TokenType.KW_STATIC);
-    const isAbstract = context.match(TokenType.KW_ABSTRACT);
+    const isStatic = context.match(TokenType.KW_STATIC, TokenType.MOD_STATIC);
+    const isAbstract = context.match(TokenType.KW_ABSTRACT, TokenType.MOD_ABSTRACT);
 
     const nameToken = context.consume(TokenType.IDENTIFIER, "Se esperaba el nombre del miembro");
 
@@ -97,6 +137,15 @@ export class EntityRule implements StatementRule {
 
   private parseAttribute(context: ParserContext, name: Token, visibility: string, isStatic: boolean): AttributeNode {
     context.consume(TokenType.COLON, "Se esperaba ':' después del nombre del atributo");
+
+    // PUNTO 5.2 DE LA ESPECIFICACIÓN: Soporte de relaciones in-line
+    let relationshipKind: string | undefined = undefined;
+    if (context.match(
+      TokenType.OP_INHERIT, TokenType.OP_IMPLEMENT, TokenType.OP_COMP,
+      TokenType.OP_AGREG, TokenType.OP_USE, TokenType.OP_GENERIC_REL
+    )) {
+      relationshipKind = context.prev().value;
+    }
 
     const typeToken = context.consume(TokenType.IDENTIFIER, "Se esperaba el tipo del atributo");
     let multiplicity: string | undefined = undefined;
@@ -116,6 +165,7 @@ export class EntityRule implements StatementRule {
       isStatic,
       typeAnnotation: typeToken.value,
       multiplicity,
+      relationshipKind,
       line: name.line,
       column: name.column
     };
@@ -129,11 +179,22 @@ export class EntityRule implements StatementRule {
       do {
         const paramName = context.consume(TokenType.IDENTIFIER, "Se esperaba el nombre del parámetro");
         context.consume(TokenType.COLON, "Se esperaba ':'");
+
+        // SOPORTE SECCIÓN 5.3: Operadores de relación en parámetros
+        let relationshipKind: string | undefined = undefined;
+        if (context.match(
+          TokenType.OP_INHERIT, TokenType.OP_IMPLEMENT, TokenType.OP_COMP,
+          TokenType.OP_AGREG, TokenType.OP_USE, TokenType.OP_GENERIC_REL
+        )) {
+          relationshipKind = context.prev().value;
+        }
+
         const paramType = context.consume(TokenType.IDENTIFIER, "Se esperaba el tipo del parámetro");
         parameters.push({
           type: ASTNodeType.PARAMETER,
           name: paramName.value,
           typeAnnotation: paramType.value,
+          relationshipKind,
           line: paramName.line,
           column: paramName.column
         });

@@ -42,6 +42,7 @@ export interface EntityNode extends ASTNode {
   name: string;
   relationships: RelationshipHeaderNode[];
   body: MemberNode[] | undefined;
+  isAbstract: boolean;
 }
 
 export interface RelationshipHeaderNode extends ASTNode {
@@ -59,7 +60,10 @@ export interface AttributeNode extends ASTNode {
   isStatic: boolean;
   typeAnnotation: string;
   multiplicity: string | undefined;
+  relationshipKind?: string | undefined;
 }
+
+
 
 export interface MethodNode extends ASTNode {
   type: ASTNodeType.METHOD;
@@ -75,6 +79,7 @@ export interface ParameterNode extends ASTNode {
   type: ASTNodeType.PARAMETER;
   name: string;
   typeAnnotation: string;
+  relationshipKind?: string | undefined;
 }
 
 export interface RelationshipNode extends ASTNode {
@@ -84,6 +89,7 @@ export interface RelationshipNode extends ASTNode {
   to: string;
   toMultiplicity: string | undefined;
   kind: string;
+  label: string | undefined;
 }
 
 export interface CommentNode extends ASTNode {

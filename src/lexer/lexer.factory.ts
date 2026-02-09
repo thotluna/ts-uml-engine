@@ -4,6 +4,7 @@ import { CommentMatcher } from './matchers/comment.matcher';
 import { IdentifierMatcher } from './matchers/identifier.matcher';
 import { NumberMatcher } from './matchers/number.matcher';
 import { SymbolMatcher } from './matchers/symbol.matcher';
+import { StringMatcher } from './matchers/string.matcher';
 
 export class LexerFactory {
   /**
@@ -15,6 +16,7 @@ export class LexerFactory {
       new CommentMatcher(),
       new IdentifierMatcher(),
       new NumberMatcher(),
+      new StringMatcher(),
       new SymbolMatcher()
     ];
 
