@@ -26,7 +26,9 @@ export interface IRMember {
   visibility: IRVisibility;
   isStatic: boolean;
   isAbstract: boolean;
-  parameters?: Array<{ name: string; type: string }>;
+  parameters?: Array<{ name: string; type: string; relationshipKind?: string }>;
+  relationshipKind?: string;
+  multiplicity?: string;
 }
 
 /**
@@ -38,6 +40,7 @@ export interface IREntity {
   type: IREntityType;
   members: IRMember[];
   isImplicit: boolean;
+  isAbstract: boolean;
   namespace?: string;
 }
 
@@ -60,8 +63,8 @@ export interface IRRelationship {
   from: string;
   to: string;
   type: IRRelationshipType;
-  fromMultiplicity?: string;
-  toMultiplicity?: string;
+  fromMultiplicity?: string | undefined;
+  toMultiplicity?: string | undefined;
   label?: string;
 }
 
