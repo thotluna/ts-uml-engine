@@ -31,6 +31,8 @@ Para el análisis léxico, el `ts-uml-engine` debe reconocer las siguientes cate
 | `OP_COMP` | `>*` | Relación de composición |
 | `OP_AGREG` | `>+` | Relación de agregación |
 | `OP_USE` | `>-` | Relación de dependencia |
+| `MOD_STATIC` | `$` | Modificador estático |
+| `MOD_ABSTRACT` | `*` | Modificador abstracto |
 | `OP_GENERIC_REL` | `>` | Iniciador genérico / mayor que |
 | `LBRACE` | `{` | Inicio de bloque |
 | `RBRACE` | `}` | Fin de bloque |
