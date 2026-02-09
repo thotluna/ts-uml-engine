@@ -1,5 +1,5 @@
 import { TokenType } from '../../lexer/token.types';
-import type { StatementNode, RelationshipNode } from '../ast/nodes';
+import type { RelationshipNode } from '../ast/nodes';
 import { ASTNodeType } from '../ast/nodes';
 import type { ParserContext } from '../parser.context';
 import type { StatementRule } from '../rule.types';
@@ -9,7 +9,11 @@ export class RelationshipRule implements StatementRule {
     const pos = context.getPosition();
 
     try {
-      if (!context.check(TokenType.IDENTIFIER)) return null;
+      const fromIsAbstract = context.match(TokenType.MOD_ABSTRACT, TokenType.KW_ABSTRACT);
+      if (!context.check(TokenType.IDENTIFIER)) {
+        if (fromIsAbstract) context.rollback(pos);
+        return null;
+      }
 
       const fromToken = context.consume(TokenType.IDENTIFIER, "Se esperaba un identificador");
       let fromMultiplicity: string | undefined = undefined;
@@ -35,6 +39,7 @@ export class RelationshipRule implements StatementRule {
         toMultiplicity = context.prev().value;
       }
 
+      const toIsAbstract = context.match(TokenType.MOD_ABSTRACT, TokenType.KW_ABSTRACT);
       const toToken = context.consume(TokenType.IDENTIFIER, "Se esperaba el nombre del objetivo de la relación");
 
       let label: string | undefined = undefined;
@@ -45,11 +50,14 @@ export class RelationshipRule implements StatementRule {
       return {
         type: ASTNodeType.RELATIONSHIP,
         from: fromToken.value,
+        fromIsAbstract,
         fromMultiplicity,
         to: toToken.value,
+        toIsAbstract,
         toMultiplicity,
         kind,
         label,
+        docs: context.consumePendingDocs(),
         line: fromToken.line,
         column: fromToken.column
       };

@@ -22,6 +22,11 @@ export class Parser implements Orchestrator {
 
     while (!context.isAtEnd()) {
       try {
+        if (context.match(TokenType.DOC_COMMENT)) {
+          context.setPendingDocs(context.prev().value);
+          continue;
+        }
+
         const stmt = this.parseStatement(context);
         if (stmt) {
           body.push(stmt);

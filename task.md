@@ -73,3 +73,5 @@
 - [x] **Detección de Ciclos**: Advertencias semánticas cuando existen dependencias circulares complejas.
 - [x] Limpieza de Código Muerto y Reorganización (v0.8.6): Carpeta `examples/` y `tools/`.
 - [x] Corregir conflicto de `rootDir` en `tsconfig.json`.
+- [x] Implementar descriptores de entidades (`*`) en relaciones.
+- [x] Implementar soporte de documentación (JSDoc `/** ... */`).

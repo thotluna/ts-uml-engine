@@ -14,16 +14,12 @@ import type { StatementRule } from '../rule.types';
 
 export class EntityRule implements StatementRule {
   public parse(context: ParserContext): EntityNode | null {
+    const pos = context.getPosition();
     const isAbstract = context.match(TokenType.KW_ABSTRACT, TokenType.MOD_ABSTRACT);
 
     if (!context.match(TokenType.KW_CLASS, TokenType.KW_INTERFACE, TokenType.KW_ENUM)) {
-      if (isAbstract) {
-        // Si hay abstract pero no le sigue una entidad, retrocedemos o lanzamos error
-        // Para simplificar, asumiremos que si hay abstract, debe venir una clase
-        context.consume(TokenType.KW_CLASS, "Se esperaba 'class' después de 'abstract'");
-      } else {
-        return null;
-      }
+      context.rollback(pos);
+      return null;
     }
 
     const token = context.prev();
@@ -38,11 +34,13 @@ export class EntityRule implements StatementRule {
     while (context.match(TokenType.OP_INHERIT, TokenType.OP_IMPLEMENT, TokenType.OP_COMP, TokenType.OP_AGREG, TokenType.OP_USE,
       TokenType.KW_EXTENDS, TokenType.KW_IMPLEMENTS, TokenType.KW_COMP, TokenType.KW_AGREG, TokenType.KW_USE)) {
       const kind = context.prev().value;
+      const targetIsAbstract = context.match(TokenType.MOD_ABSTRACT, TokenType.KW_ABSTRACT);
       const target = context.consume(TokenType.IDENTIFIER, "Se esperaba el nombre del objetivo de la relación").value;
       relationships.push({
         type: ASTNodeType.RELATIONSHIP,
         kind,
         target,
+        targetIsAbstract,
         line: context.prev().line,
         column: context.prev().column
       });
@@ -55,6 +53,11 @@ export class EntityRule implements StatementRule {
     if (context.match(TokenType.LBRACE)) {
       body = [];
       while (!context.check(TokenType.RBRACE) && !context.isAtEnd()) {
+        if (context.match(TokenType.DOC_COMMENT)) {
+          context.setPendingDocs(context.prev().value);
+          continue;
+        }
+
         if (type === ASTNodeType.ENUM) {
           if (context.check(TokenType.COMMENT)) {
             const commentToken = context.consume(TokenType.COMMENT, "");
@@ -76,6 +79,7 @@ export class EntityRule implements StatementRule {
               isStatic: true,
               typeAnnotation: 'any',
               multiplicity: undefined,
+              docs: context.consumePendingDocs(),
               line: nameToken.line,
               column: nameToken.column
             });
@@ -97,6 +101,7 @@ export class EntityRule implements StatementRule {
       type,
       name: nameToken.value,
       isAbstract,
+      docs: context.consumePendingDocs(),
       relationships,
       body,
       line: token.line,
@@ -147,6 +152,7 @@ export class EntityRule implements StatementRule {
       relationshipKind = context.prev().value;
     }
 
+    const targetIsAbstract = context.match(TokenType.MOD_ABSTRACT, TokenType.KW_ABSTRACT);
     const typeToken = context.consume(TokenType.IDENTIFIER, "Se esperaba el tipo del atributo");
     let multiplicity: string | undefined = undefined;
 
@@ -166,6 +172,8 @@ export class EntityRule implements StatementRule {
       typeAnnotation: typeToken.value,
       multiplicity,
       relationshipKind,
+      targetIsAbstract,
+      docs: context.consumePendingDocs(),
       line: name.line,
       column: name.column
     };
@@ -189,12 +197,14 @@ export class EntityRule implements StatementRule {
           relationshipKind = context.prev().value;
         }
 
+        const targetIsAbstract = context.match(TokenType.MOD_ABSTRACT, TokenType.KW_ABSTRACT);
         const paramType = context.consume(TokenType.IDENTIFIER, "Se esperaba el tipo del parámetro");
         parameters.push({
           type: ASTNodeType.PARAMETER,
           name: paramName.value,
           typeAnnotation: paramType.value,
           relationshipKind,
+          targetIsAbstract,
           line: paramName.line,
           column: paramName.column
         });
@@ -216,6 +226,7 @@ export class EntityRule implements StatementRule {
       isAbstract,
       parameters,
       returnType,
+      docs: context.consumePendingDocs(),
       line: name.line,
       column: name.column
     };
