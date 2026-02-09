@@ -38,7 +38,8 @@ body_opt       ::= "{" member* "}"
 
 member         ::= visibility_opt [static_opt] [abstract_opt] (method_def | attribute_def) [comment]
 
-static_opt     ::= "static"
+static_opt     ::= "static" | "$"
+abstract_opt   ::= "abstract" | "*"
 
 visibility_opt ::= "+" | "-" | "#" | "~" | "public" | "private" | "protected" | "internal" | empty
 ```
@@ -55,7 +56,7 @@ param          ::= identifier ":" type
 
 type           ::= identifier | inline_enum
 
-relationship_mark ::= ">" | ">*" | ">+" | ">-" | ">>" | ">I"
+relationship_mark ::= ">*" | ">+" | ">-" | ">>" | ">I"
 ```
 
 ## 5. Relaciones
@@ -71,7 +72,7 @@ relationship_type   ::= ">>" | ">extends"
                       | ">I" | ">implements"
                       | ">*" | ">comp"
                       | ">+" | ">agreg"
-                      | ">-" | ">use"
+                      | ">-" | ">asoc"
 ```
 
 ## 6. Multiplicidad y Enums
