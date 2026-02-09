@@ -1,5 +1,5 @@
-import { UMLEngine } from '../index';
-import { MermaidGenerator } from '../generator/mermaid.generator';
+import { UMLEngine } from '../../src/index';
+import { MermaidGenerator } from '../../src/generator/mermaid.generator';
 import * as fs from 'fs';
 import * as path from 'path';
 
