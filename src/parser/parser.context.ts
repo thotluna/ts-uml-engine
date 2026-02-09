@@ -74,4 +74,16 @@ export class ParserContext {
   public hasErrors(): boolean {
     return this.diagnostics.some(d => d.severity === DiagnosticSeverity.ERROR);
   }
+
+  private pendingDocs: string | undefined;
+
+  public setPendingDocs(docs: string): void {
+    this.pendingDocs = docs;
+  }
+
+  public consumePendingDocs(): string | undefined {
+    const docs = this.pendingDocs;
+    this.pendingDocs = undefined;
+    return docs;
+  }
 }

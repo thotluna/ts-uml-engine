@@ -52,6 +52,7 @@ export enum TokenType {
 
   // Others
   COMMENT = 'COMMENT',
+  DOC_COMMENT = 'DOC_COMMENT',
   EOF = 'EOF',
   UNKNOWN = 'UNKNOWN'
 }

@@ -26,6 +26,10 @@ export class CommentMatcher implements TokenMatcher {
     if (next === '*') {
       let value = '/*';
       reader.advance(); // consume *
+
+      const isDoc = reader.peek() === '*' && reader.peekNext() !== '/';
+      const tokenType = isDoc ? TokenType.DOC_COMMENT : TokenType.COMMENT;
+
       while (!reader.isAtEnd()) {
         if (reader.peek() === '*' && reader.peekNext() === '/') {
           reader.advance(); // *
@@ -36,7 +40,7 @@ export class CommentMatcher implements TokenMatcher {
         const char = reader.advance();
         value += char;
       }
-      return { type: TokenType.COMMENT, value, line: startLine, column: startColumn };
+      return { type: tokenType, value, line: startLine, column: startColumn };
     }
 
     reader.rollback(snap);

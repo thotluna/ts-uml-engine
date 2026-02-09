@@ -15,6 +15,7 @@ export interface ASTNode {
   type: ASTNodeType;
   line: number;
   column: number;
+  docs?: string | undefined;
 }
 
 export interface ProgramNode extends ASTNode {
@@ -49,6 +50,7 @@ export interface RelationshipHeaderNode extends ASTNode {
   type: ASTNodeType.RELATIONSHIP;
   kind: string; // >>, >I, >*, etc.
   target: string;
+  targetIsAbstract?: boolean;
 }
 
 export type MemberNode = MethodNode | AttributeNode | CommentNode;
@@ -61,9 +63,8 @@ export interface AttributeNode extends ASTNode {
   typeAnnotation: string;
   multiplicity: string | undefined;
   relationshipKind?: string | undefined;
+  targetIsAbstract?: boolean;
 }
-
-
 
 export interface MethodNode extends ASTNode {
   type: ASTNodeType.METHOD;
@@ -80,13 +81,16 @@ export interface ParameterNode extends ASTNode {
   name: string;
   typeAnnotation: string;
   relationshipKind?: string | undefined;
+  targetIsAbstract?: boolean;
 }
 
 export interface RelationshipNode extends ASTNode {
   type: ASTNodeType.RELATIONSHIP;
   from: string;
+  fromIsAbstract?: boolean;
   fromMultiplicity: string | undefined;
   to: string;
+  toIsAbstract?: boolean;
   toMultiplicity: string | undefined;
   kind: string;
   label: string | undefined;
