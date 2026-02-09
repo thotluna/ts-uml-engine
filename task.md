@@ -47,6 +47,7 @@
 - [x] Implementación de la clase `UMLEngine` (Fachada principal)
 - [x] Integración de Lexer -> Parser -> Analyzer en un solo flujo
 - [x] Exportación de tipos y modelos para uso como librería
+- [x] Empaquetado formal como librería (Configuración de `package.json` y `exports`)
 - [x] Automatización de build (dist/)
 
 ### Fase 5: Herramientas de Referencia (Diagramas)

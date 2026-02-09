@@ -2,17 +2,24 @@
   "name": "ts-uml-engine",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/exports.js",
+  "types": "./dist/exports.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/exports.d.ts",
+      "import": "./dist/exports.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "generate": "tsx src/cli/main.ts",
+    "generate": "tsx tools/cli/main.ts",
     "test": "vitest",
     "test:run": "vitest run"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "packageManager": "pnpm@10.28.1",
   "devDependencies": {
     "@types/node": "^25.2.2",
