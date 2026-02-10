@@ -29,6 +29,9 @@ export interface IRMember {
   parameters?: Array<{ name: string; type: string; relationshipKind?: string }>;
   relationshipKind?: string;
   multiplicity?: string;
+  line?: number;
+  column?: number;
+  docs?: string | undefined;
 }
 
 /**
@@ -41,7 +44,12 @@ export interface IREntity {
   members: IRMember[];
   isImplicit: boolean;
   isAbstract: boolean;
+  isActive: boolean;
+  typeParameters?: string[] | undefined;
   namespace?: string;
+  docs?: string | undefined;
+  line?: number;
+  column?: number;
 }
 
 /**
@@ -66,6 +74,9 @@ export interface IRRelationship {
   fromMultiplicity?: string | undefined;
   toMultiplicity?: string | undefined;
   label?: string;
+  docs?: string | undefined;
+  line?: number;
+  column?: number;
 }
 
 /**

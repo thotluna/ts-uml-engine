@@ -1,3 +1,4 @@
+
 import { LexerFactory } from './lexer/lexer.factory';
 import { ParserFactory } from './parser/parser.factory';
 import { SemanticAnalyzer } from './semantics/analyzer';
@@ -21,7 +22,6 @@ export interface ParseResult {
  * Orquesta las fases del compilador en un flujo único.
  */
 export class UMLEngine {
-  private semanticAnalyzer = new SemanticAnalyzer();
 
   /**
    * Procesa código fuente UMLTS y devuelve una representación intermedia resuelta.
@@ -35,7 +35,6 @@ export class UMLEngine {
     // 1. Análisis Léxico
     const lexer = LexerFactory.create(source);
     const tokens = lexer.tokenize();
-    // (Por ahora el lexer no genera diagnósticos, se asumen tokens válidos o errores de lectura)
 
     // 2. Análisis Sintáctico
     const parser = ParserFactory.create();
@@ -46,14 +45,25 @@ export class UMLEngine {
       diagnostics.push(...ast.diagnostics);
     }
 
-    // 3. Análisis Semántico (solo si el AST es estructuralmente válido o recuperable)
-    // El Analizador Semántico es robusto y puede manejar ASTs incompletos.
-    const diagram = this.semanticAnalyzer.analyze(ast);
+    // 3. Análisis Semántico
+    // IMPORTANTE: Instanciamos un nuevo analizador por cada parseo para evitar
+    // la filtración de estado entre cambios de código (evita duplicados acumulados).
+    const analyzer = new SemanticAnalyzer();
+    const diagram = analyzer.analyze(ast);
 
     return {
       diagram,
       diagnostics,
       isValid: diagnostics.length === 0
     };
+  }
+
+  /**
+   * Devuelve los tokens generados por el lexer para un código fuente.
+   * Útil para depuración.
+   */
+  public getTokens(source: string): any[] {
+    const lexer = LexerFactory.create(source);
+    return lexer.tokenize();
   }
 }

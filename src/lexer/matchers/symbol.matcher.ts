@@ -12,7 +12,9 @@ export class SymbolMatcher implements TokenMatcher {
     '.': TokenType.DOT, '|': TokenType.PIPE,
     '*': TokenType.MOD_ABSTRACT, '+': TokenType.VIS_PUB,
     '-': TokenType.VIS_PRIV, '#': TokenType.VIS_PROT,
-    '~': TokenType.VIS_PACK, '$': TokenType.MOD_STATIC
+    '~': TokenType.VIS_PACK, '$': TokenType.MOD_STATIC,
+    '&': TokenType.MOD_ACTIVE,
+    '<': TokenType.LT, '>': TokenType.GT
   };
 
   public match(reader: LexerReader): Token | null {
@@ -53,10 +55,10 @@ export class SymbolMatcher implements TokenMatcher {
         // Si no es un keyword especial, devolvemos solo el >
         reader.rollback(snap);
         reader.advance();
-        return { type: TokenType.OP_GENERIC_REL, value: '>', line: startLine, column: startColumn };
+        return { type: TokenType.GT, value: '>', line: startLine, column: startColumn };
       }
 
-      return { type: TokenType.OP_GENERIC_REL, value: '>', line: startLine, column: startColumn };
+      return { type: TokenType.GT, value: '>', line: startLine, column: startColumn };
     }
 
     // Doble carácter ..

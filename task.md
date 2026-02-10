@@ -75,3 +75,11 @@
 - [x] Corregir conflicto de `rootDir` en `tsconfig.json`.
 - [x] Implementar descriptores de entidades (`*`) en relaciones.
 - [x] Implementar soporte de documentación (JSDoc `/** ... */`).
+- [x] Implementar Hovers Enriquecidos (Tooltips) para Entidades y Operadores.
+- [x] Extraer JSON del AST para `manual_reference.umlts`.
+- [x] Generar ejemplo completo de IR con todos los tokens en `examples/complete_tokens.umlts`.
+- [x] Mejorar IR según requerimientos de renderizado:
+    - [x] Implementar soporte para Genéricos (`typeParameters`) en AST e IR.
+    - [x] Implementar soporte para Clases Activas (Keyword `active` y Símbolo `&`)
+    - [x] Confirmar propagación de `docs` en todos los niveles (Entidades y Atributos).
+    - [x] Confirmar preservación del orden de miembros.

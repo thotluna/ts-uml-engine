@@ -35,12 +35,12 @@ export class SemanticAnalyzer {
    */
   public analyze(program: ProgramNode): IRDiagram {
     // Paso 1: Recolectar todas las declaraciones explícitas
-    const declVisitor = new DeclarationVisitor(this.symbolTable, this.currentNamespace);
+    const declVisitor = new DeclarationVisitor(this, this.symbolTable, this.currentNamespace);
     walkAST(program, declVisitor);
 
     // Paso 2: Procesar relaciones y crear entidades implícitas
     this.currentNamespace = []; // Reset namespace para la segunda pasada
-    const relVisitor = new RelationshipVisitor(this.symbolTable, this.relationships, this.currentNamespace);
+    const relVisitor = new RelationshipVisitor(this, this.symbolTable, this.relationships, this.currentNamespace);
     walkAST(program, relVisitor);
 
     // Paso 3: Inferencia Automática (Basado en tipos de miembros)
@@ -61,20 +61,15 @@ export class SemanticAnalyzer {
 
     entities.forEach(entity => {
       entity.members.forEach(member => {
-        const isMethod = Array.isArray(member.parameters);
-
         // 1. Inferir del tipo del atributo o retorno del método
         if (member.type) {
-          // ESPECIFICACIÓN v0.8: Las relaciones in-line DEBEN tener un operador explícito
           if (member.relationshipKind) {
             const relType = mapRelationshipType(member.relationshipKind);
             this.inferFromType(entity.id, member.type, entity.namespace, member.name, relType, member.multiplicity);
           }
-          // Si es un método, el tipo de retorno NO genera relación automática a menos que se use un operador (opcional en futuro)
-          // por ahora mantenemos la pureza: Sin operador = Atributo/Método local.
         }
 
-        // 2. Inferir de los parámetros del método (Solo si tienen operador explícito v0.8.2)
+        // 2. Inferir de los parámetros del método
         if (member.parameters) {
           member.parameters.forEach(param => {
             if (param.relationshipKind) {
@@ -95,7 +90,6 @@ export class SemanticAnalyzer {
     relType: IRRelationshipType = IRRelationshipType.ASSOCIATION,
     multiplicity?: string
   ): void {
-    // Ignorar tipos primitivos comunes para no ensuciar innecesariamente
     const primitives = [
       'string', 'number', 'boolean', 'void', 'any', 'unknown', 'never', 'object',
       'cadena', 'fecha', 'entero', 'booleano', 'int', 'float', 'double', 'char',
@@ -103,13 +97,9 @@ export class SemanticAnalyzer {
     ];
     if (primitives.includes(typeName.toLowerCase())) return;
 
-    // Quitar marcas de array si las hay (ej: User[] -> User)
     const baseType = typeName.replace(/[\[\]]/g, '');
+    const toFQN = this.resolveOrRegisterImplicit(baseType, fromNamespace || '');
 
-    const toFQN = this.symbolTable.resolveFQN(baseType, fromNamespace);
-
-    // Solo creamos la relación si la entidad existe o es algo que vale la pena rastrear (no es primitivo)
-    // Y verificamos que no exista ya una relación directa entre estas dos entidades
     if (this.shouldCreateInferredRel(fromFQN, toFQN, relType)) {
       this.relationships.push({
         from: fromFQN,
@@ -121,14 +111,43 @@ export class SemanticAnalyzer {
     }
   }
 
+  /**
+   * Resuelve un nombre y si no existe en la tabla de símbolos, lo registra como implícito.
+   */
+  public resolveOrRegisterImplicit(name: string, namespace: string): string {
+    const fqn = this.symbolTable.resolveFQN(name, namespace);
+
+    if (!this.symbolTable.has(fqn)) {
+      // Extraer nombre corto si el nombre original incluía puntos
+      const shortName = name.includes('.') ? name.substring(name.lastIndexOf('.') + 1) : name;
+
+      const entity: IREntity = {
+        id: fqn,
+        name: shortName,
+        type: IREntityType.CLASS,
+        members: [],
+        isImplicit: true,
+        isAbstract: false,
+        isActive: false
+      };
+
+      // Namespace se extrae del FQN resuelto
+      if (fqn.includes('.')) {
+        entity.namespace = fqn.substring(0, fqn.lastIndexOf('.'));
+      } else if (namespace) {
+        entity.namespace = namespace;
+      }
+
+      this.symbolTable.register(entity);
+    }
+
+    return fqn;
+  }
+
   private shouldCreateInferredRel(from: string, to: string, type: IRRelationshipType): boolean {
-    // Evitar duplicados exactos del mismo tipo
     const exactMatch = this.relationships.some(rel => rel.from === from && rel.to === to && rel.type === type);
     if (exactMatch) return false;
 
-    // Regla de Precedencia:
-    // Si la nueva relación es de Dependencia (Uso) pero ya existe una relación estructural
-    // más fuerte (Asociación, Composición, etc.), no creamos la de dependencia.
     if (type === IRRelationshipType.DEPENDENCY) {
       const strongerExists = this.relationships.some(rel =>
         rel.from === from &&
@@ -147,6 +166,7 @@ export class SemanticAnalyzer {
  */
 class DeclarationVisitor implements ASTVisitor {
   constructor(
+    private analyzer: SemanticAnalyzer,
     private symbolTable: SymbolTable,
     private currentNamespace: string[]
   ) { }
@@ -162,32 +182,38 @@ class DeclarationVisitor implements ASTVisitor {
   }
 
   visitEntity(node: EntityNode): void {
-    const namespace = this.currentNamespace.join('.');
-    const fqn = namespace ? `${namespace}.${node.name}` : node.name;
+    const currentNS = this.currentNamespace.join('.');
+    const fqn = currentNS ? (node.name.includes('.') ? node.name : `${currentNS}.${node.name}`) : node.name;
+
+    // Extraer short name si el nombre original incluía puntos
+    const shortName = node.name.includes('.') ? node.name.substring(node.name.lastIndexOf('.') + 1) : node.name;
 
     const entity: IREntity = {
       id: fqn,
-      name: node.name,
+      name: shortName,
       type: this.mapEntityType(node.type),
       members: this.mapMembers(node.body || []),
       isImplicit: false,
-      isAbstract: (node.type === ASTNodeType.CLASS) && (node as any).isAbstract === true
+      isAbstract: (node.type === ASTNodeType.CLASS) && (node as any).isAbstract === true,
+      isActive: node.isActive || false,
+      typeParameters: node.typeParameters,
+      docs: node.docs,
+      line: node.line,
+      column: node.column
     };
 
-    if (namespace) {
-      entity.namespace = namespace;
+    // Namespace se extrae del FQN resuelto
+    if (fqn.includes('.')) {
+      entity.namespace = fqn.substring(0, fqn.lastIndexOf('.'));
+    } else if (currentNS) {
+      entity.namespace = currentNS;
     }
 
     this.symbolTable.register(entity);
   }
 
-  visitRelationship(node: RelationshipNode): void {
-    // En la primera pasada ignoramos las relaciones standalone
-  }
-
-  visitComment(node: CommentNode): void {
-    // Ignoramos comentarios
-  }
+  visitRelationship(node: RelationshipNode): void { }
+  visitComment(node: CommentNode): void { }
 
   private mapEntityType(type: ASTNodeType): IREntityType {
     switch (type) {
@@ -212,7 +238,10 @@ class DeclarationVisitor implements ASTVisitor {
           relationshipKind: p.relationshipKind
         })),
         relationshipKind: m.relationshipKind,
-        multiplicity: m.multiplicity
+        multiplicity: m.multiplicity,
+        docs: m.docs,
+        line: m.line,
+        column: m.column
       }));
   }
 
@@ -231,6 +260,7 @@ class DeclarationVisitor implements ASTVisitor {
  */
 class RelationshipVisitor implements ASTVisitor {
   constructor(
+    private analyzer: SemanticAnalyzer,
     private symbolTable: SymbolTable,
     private relationships: IRRelationship[],
     private currentNamespace: string[]
@@ -250,22 +280,24 @@ class RelationshipVisitor implements ASTVisitor {
     const namespace = this.currentNamespace.join('.');
     const fromFQN = this.symbolTable.resolveFQN(node.name, namespace);
 
-    // Procesar headers (class A >> B)
     node.relationships.forEach(rel => {
-      const toFQN = this.resolveOrRegisterImplicit(rel.target, namespace);
+      const toFQN = this.analyzer.resolveOrRegisterImplicit(rel.target, namespace);
       this.addRelationship(fromFQN, toFQN, rel.kind);
     });
   }
 
   visitRelationship(node: RelationshipNode): void {
     const namespace = this.currentNamespace.join('.');
-    const fromFQN = this.resolveOrRegisterImplicit(node.from, namespace);
-    const toFQN = this.resolveOrRegisterImplicit(node.to, namespace);
+    const fromFQN = this.analyzer.resolveOrRegisterImplicit(node.from, namespace);
+    const toFQN = this.analyzer.resolveOrRegisterImplicit(node.to, namespace);
 
     const irRel: IRRelationship = {
       from: fromFQN,
       to: toFQN,
-      type: mapRelationshipType(node.kind)
+      type: mapRelationshipType(node.kind),
+      docs: node.docs,
+      line: node.line,
+      column: node.column
     };
 
     if (node.fromMultiplicity) irRel.fromMultiplicity = node.fromMultiplicity;
@@ -277,29 +309,6 @@ class RelationshipVisitor implements ASTVisitor {
 
   visitComment(node: CommentNode): void { }
 
-  private resolveOrRegisterImplicit(name: string, namespace: string): string {
-    const fqn = this.symbolTable.resolveFQN(name, namespace);
-
-    if (!this.symbolTable.has(fqn)) {
-      const entity: IREntity = {
-        id: fqn,
-        name: name,
-        type: IREntityType.CLASS,
-        members: [],
-        isImplicit: true,
-        isAbstract: false
-      };
-
-      if (fqn.includes('.')) {
-        entity.namespace = fqn.substring(0, fqn.lastIndexOf('.'));
-      }
-
-      this.symbolTable.register(entity);
-    }
-
-    return fqn;
-  }
-
   private addRelationship(from: string, to: string, kind: string): void {
     this.relationships.push({
       from,
@@ -309,10 +318,6 @@ class RelationshipVisitor implements ASTVisitor {
   }
 }
 
-/**
- * Mapea el operador de relación del DSL a un tipo de la IR.
- * Centralizado para uso en el SemanticAnalyzer y Visitors.
- */
 function mapRelationshipType(kind: string): IRRelationshipType {
   const k = kind.trim();
   if (k === '>>' || k === '>extends') return IRRelationshipType.INHERITANCE;
@@ -321,14 +326,11 @@ function mapRelationshipType(kind: string): IRRelationshipType {
   if (k === '>+' || k === '>agreg') return IRRelationshipType.AGGREGATION;
   if (k === '>-' || k === '>use') return IRRelationshipType.DEPENDENCY;
 
-  // Fallback por prefijos
   if (k.startsWith('>>')) return IRRelationshipType.INHERITANCE;
   if (k.startsWith('>I')) return IRRelationshipType.IMPLEMENTATION;
   if (k.startsWith('>*')) return IRRelationshipType.COMPOSITION;
   if (k.startsWith('>+')) return IRRelationshipType.AGGREGATION;
   if (k.startsWith('>-')) return IRRelationshipType.DEPENDENCY;
 
-  // El operador > solo se permite para enums o como fallback si no hay símbolo, 
-  // pero el usuario lo considera ambiguo para clases.
   return IRRelationshipType.ASSOCIATION;
 }

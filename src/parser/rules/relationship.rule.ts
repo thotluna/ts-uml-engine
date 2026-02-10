@@ -71,7 +71,7 @@ export class RelationshipRule implements StatementRule {
     return [
       TokenType.OP_INHERIT, TokenType.OP_IMPLEMENT, TokenType.OP_COMP, TokenType.OP_AGREG, TokenType.OP_USE,
       TokenType.KW_EXTENDS, TokenType.KW_IMPLEMENTS, TokenType.KW_COMP, TokenType.KW_AGREG, TokenType.KW_USE,
-      TokenType.OP_GENERIC_REL
+      TokenType.OP_GENERIC_REL, TokenType.GT
     ].includes(type);
   }
 

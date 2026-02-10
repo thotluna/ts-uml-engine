@@ -15,6 +15,7 @@ import type { StatementRule } from '../rule.types';
 export class EntityRule implements StatementRule {
   public parse(context: ParserContext): EntityNode | null {
     const pos = context.getPosition();
+    const isActive = context.match(TokenType.KW_ACTIVE, TokenType.MOD_ACTIVE);
     const isAbstract = context.match(TokenType.KW_ABSTRACT, TokenType.MOD_ABSTRACT);
 
     if (!context.match(TokenType.KW_CLASS, TokenType.KW_INTERFACE, TokenType.KW_ENUM)) {
@@ -29,13 +30,38 @@ export class EntityRule implements StatementRule {
 
     const nameToken = context.consume(TokenType.IDENTIFIER, "Se esperaba el nombre de la entidad");
 
+    // PUNTO IMPORTANTE: Consumir la documentación PENDIENTE antes de entrar en el cuerpo
+    // Para evitar que el primer miembro se la robe si el parser entra en parseBody()
+    const docs = context.consumePendingDocs();
+
+    // Soporte para genéricos: <T, K>
+    let typeParameters: string[] | undefined = undefined;
+    if (context.match(TokenType.LT)) {
+      typeParameters = [];
+      do {
+        const param = context.consume(TokenType.IDENTIFIER, "Se esperaba el nombre del parámetro de tipo");
+        typeParameters.push(param.value);
+      } while (context.match(TokenType.COMMA));
+      context.consume(TokenType.GT, "Se esperaba '>' después de los parámetros de tipo");
+    }
+
     // Parse relationship list in header
     const relationships: RelationshipHeaderNode[] = [];
     while (context.match(TokenType.OP_INHERIT, TokenType.OP_IMPLEMENT, TokenType.OP_COMP, TokenType.OP_AGREG, TokenType.OP_USE,
-      TokenType.KW_EXTENDS, TokenType.KW_IMPLEMENTS, TokenType.KW_COMP, TokenType.KW_AGREG, TokenType.KW_USE)) {
+      TokenType.KW_EXTENDS, TokenType.KW_IMPLEMENTS, TokenType.KW_COMP, TokenType.KW_AGREG, TokenType.KW_USE, TokenType.GT)) {
       const kind = context.prev().value;
       const targetIsAbstract = context.match(TokenType.MOD_ABSTRACT, TokenType.KW_ABSTRACT);
-      const target = context.consume(TokenType.IDENTIFIER, "Se esperaba el nombre del objetivo de la relación").value;
+      let target = context.consume(TokenType.IDENTIFIER, "Se esperaba el nombre del objetivo de la relación").value;
+
+      // Opcionalmente consumir argumentos de tipo: <string>
+      if (context.match(TokenType.LT)) {
+        target += '<';
+        while (!context.check(TokenType.GT) && !context.isAtEnd()) {
+          target += context.advance().value;
+        }
+        target += context.consume(TokenType.GT, "Se esperaba '>'").value;
+      }
+
       relationships.push({
         type: ASTNodeType.RELATIONSHIP,
         kind,
@@ -101,7 +127,9 @@ export class EntityRule implements StatementRule {
       type,
       name: nameToken.value,
       isAbstract,
-      docs: context.consumePendingDocs(),
+      isActive,
+      typeParameters,
+      docs,
       relationships,
       body,
       line: token.line,
@@ -110,6 +138,11 @@ export class EntityRule implements StatementRule {
   }
 
   private parseMember(context: ParserContext): MemberNode | null {
+    if (context.match(TokenType.DOC_COMMENT)) {
+      context.setPendingDocs(context.prev().value);
+      return this.parseMember(context);
+    }
+
     if (context.check(TokenType.COMMENT)) {
       const token = context.consume(TokenType.COMMENT, "");
       return {
@@ -153,7 +186,7 @@ export class EntityRule implements StatementRule {
     }
 
     const targetIsAbstract = context.match(TokenType.MOD_ABSTRACT, TokenType.KW_ABSTRACT);
-    const typeToken = context.consume(TokenType.IDENTIFIER, "Se esperaba el tipo del atributo");
+    const typeAnnotation = this.parseType(context);
     let multiplicity: string | undefined = undefined;
 
     if (context.match(TokenType.LBRACKET)) {
@@ -169,7 +202,7 @@ export class EntityRule implements StatementRule {
       name: name.value,
       visibility,
       isStatic,
-      typeAnnotation: typeToken.value,
+      typeAnnotation,
       multiplicity,
       relationshipKind,
       targetIsAbstract,
@@ -198,11 +231,11 @@ export class EntityRule implements StatementRule {
         }
 
         const targetIsAbstract = context.match(TokenType.MOD_ABSTRACT, TokenType.KW_ABSTRACT);
-        const paramType = context.consume(TokenType.IDENTIFIER, "Se esperaba el tipo del parámetro");
+        const typeAnnotation = this.parseType(context);
         parameters.push({
           type: ASTNodeType.PARAMETER,
           name: paramName.value,
-          typeAnnotation: paramType.value,
+          typeAnnotation,
           relationshipKind,
           targetIsAbstract,
           line: paramName.line,
@@ -213,9 +246,9 @@ export class EntityRule implements StatementRule {
 
     context.consume(TokenType.RPAREN, "Se esperaba ')' después de los parámetros");
 
-    let returnType: string | undefined = undefined;
+    let returnType = 'void';
     if (context.match(TokenType.COLON)) {
-      returnType = context.consume(TokenType.IDENTIFIER, "Se esperaba el tipo de retorno").value;
+      returnType = this.parseType(context);
     }
 
     return {
@@ -230,5 +263,24 @@ export class EntityRule implements StatementRule {
       line: name.line,
       column: name.column
     };
+  }
+
+  private parseType(context: ParserContext): string {
+    const nextToken = context.peek();
+    if (nextToken.type !== TokenType.IDENTIFIER) {
+      throw new Error(`Se esperaba un tipo en línea ${nextToken.line}, columna ${nextToken.column}`);
+    }
+
+    let type = context.advance().value;
+
+    if (context.match(TokenType.LT)) {
+      type += '<';
+      while (!context.check(TokenType.GT) && !context.isAtEnd()) {
+        type += context.advance().value;
+      }
+      type += context.consume(TokenType.GT, "Se esperaba '>'").value;
+    }
+
+    return type;
   }
 }

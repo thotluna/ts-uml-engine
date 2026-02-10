@@ -15,6 +15,7 @@ export enum TokenType {
   KW_COMP = 'KW_COMP',
   KW_AGREG = 'KW_AGREG',
   KW_USE = 'KW_USE',
+  KW_ACTIVE = 'KW_ACTIVE',
 
   // Operators and Symbols
   OP_INHERIT = 'OP_INHERIT',      // >>
@@ -23,6 +24,8 @@ export enum TokenType {
   OP_AGREG = 'OP_AGREG',          // >+
   OP_USE = 'OP_USE',              // >-
   OP_GENERIC_REL = 'OP_GENERIC_REL', // >
+  LT = 'LT',                      // <
+  GT = 'GT',                      // >
 
   LBRACE = 'LBRACE',              // {
   RBRACE = 'RBRACE',              // }
@@ -44,6 +47,7 @@ export enum TokenType {
 
   MOD_STATIC = 'MOD_STATIC',      // $
   MOD_ABSTRACT = 'MOD_ABSTRACT',  // *
+  MOD_ACTIVE = 'MOD_ACTIVE',      // &
 
   // Identifiers and Literals
   IDENTIFIER = 'IDENTIFIER',
